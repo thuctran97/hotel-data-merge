@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class DataLoader {
 
-    @Scheduled(fixedRate = 5000)
-    public void scheduleTaskWithCronExpression() {
+    @Scheduled(cron = "*/10 * * * * ?")
+    public void doDataLoader() {
         log.info("Cron Task");
     }
 
