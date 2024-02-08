@@ -6,8 +6,8 @@
     "mappingSchema": {
       "id": "Id",
       "name": "Name",
-      "destinationId": "DestinationId",
       "location": {
+        "destinationId": "DestinationId",
         "country": "Country",
         "address": "Address",
         "latitude": "Latitude",
@@ -24,8 +24,8 @@
     "mappingSchema": {
       "id": "id",
       "name": "name",
-      "destinationId": "destination",
       "location": {
+        "destinationId": "destination",
         "address": "address",
         "latitude": "lat",
         "longitude": "lng"
@@ -33,14 +33,9 @@
       "description": "info",
       "amenities": "amenities",
       "images": {
-        "rooms": {
-          "url": "images.rooms.url",
-          "description": "images.rooms.description"
-        },
-        "amenities": {
-          "url": "images.amenities.url",
-          "description": "images.amenities.description"
-        }
+        "url": "images.*.url",
+        "description": "images.*.description",
+        "type": "images.*"
       }
     }
   },
@@ -59,14 +54,9 @@
       "description": "details",
       "amenities": "amenities.*",
       "images": {
-        "rooms": {
-          "url": "images.rooms.link",
-          "description": "images.rooms.caption"
-        },
-        "site": {
-          "url": "images.site.url",
-          "description": "images.site.caption"
-        }
+        "url": "images.*.link",
+        "description": "images.*.caption",
+        "type": "images.*"
       }
     }
   }
