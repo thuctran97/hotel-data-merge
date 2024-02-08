@@ -20,6 +20,8 @@ public class Supplier {
 
     private String name;
 
+    private String url;
+
     private Integer dataPriorityLevel;
 
     private HotelMapper mappingSchema;
