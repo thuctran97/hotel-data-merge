@@ -1,9 +1,9 @@
-package com.ascenda.hoteldatamerge.model.schema;
+package com.ascenda.hoteldatamerge.model.mapper;
 
 import lombok.Getter;
 
 @Getter
-public class HotelMappingSchema {
+public class HotelMapper {
 
     private String id;
 
@@ -15,7 +15,7 @@ public class HotelMappingSchema {
 
     private String amenities;
 
-    private LocationMappingSchema location;
+    private LocationMapper location;
 
-    private ImageMappingSchema image;
+    private ImageMapper image;
 }

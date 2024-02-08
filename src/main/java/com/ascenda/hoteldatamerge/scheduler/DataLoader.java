@@ -20,10 +20,6 @@ public class DataLoader {
     @Scheduled(cron = "*/10 * * * * ?")
     public void doDataLoader() {
         log.info("Cron Task");
-        List<Supplier> supplierList = supplierService.getAllSuppliers();
-        for (Supplier sup: supplierList) {
-            log.info("Location: {}", sup.getMappingSchema().toString());
-        }
     }
 
 }
