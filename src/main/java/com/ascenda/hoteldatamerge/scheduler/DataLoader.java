@@ -33,7 +33,7 @@ public class DataLoader {
 
     private final MongoTemplate mongoTemplate;
 
-    @Scheduled(cron = "*/10 * * * * ?")
+//    @Scheduled(cron = "*/10 * * * * ?")
     public void doDataLoader() {
         log.info("Cron Task");
         List<Supplier> supplierList = supplierService.getAllSuppliers();

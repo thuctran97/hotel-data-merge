@@ -23,9 +23,11 @@ public class Hotel {
 
     private String[] facilities;
 
-    private String[] amenities;
+    private Amenity[] amenities;
 
     private Location location;
 
-    private Image image;
+    private Image[] image;
+
+    private String[] bookingConditions;
 }

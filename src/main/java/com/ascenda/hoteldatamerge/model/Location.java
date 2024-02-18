@@ -14,6 +14,8 @@ public class Location {
 
     private String address;
 
+    private String city;
+
     private String country;
 
     private Float latitude;
