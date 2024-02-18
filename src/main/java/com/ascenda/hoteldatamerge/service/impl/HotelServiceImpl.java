@@ -1,14 +1,31 @@
 package com.ascenda.hoteldatamerge.service.impl;
 
 import com.ascenda.hoteldatamerge.model.Hotel;
+import com.ascenda.hoteldatamerge.repository.HotelRepository;
 import com.ascenda.hoteldatamerge.service.HotelService;
 import com.google.gson.*;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class HotelServiceImpl implements HotelService {
+
+    private final HotelRepository hotelRepository;
+
+    @Override
+    public List<Hotel> findById(List<String> ids){
+        return hotelRepository.findAllById(ids);
+    }
+
+    @Override
+    public Hotel findByDestinationId(Integer destinationIds){
+        return hotelRepository.findByLocation_DestinationId(destinationIds);
+    }
 
     @Override
     public Hotel convertData(JsonElement element, String mapper){

@@ -1,6 +1,6 @@
 [
   {
-    "id": "iJhz",
+    "_id": "iJhz",
     "name": "Beach Villas Singapore",
     "location": {
       "destinationId": 5432,
@@ -68,7 +68,7 @@
     ]
   },
   {
-    "id": "SjyX",
+    "_id": "SjyX",
     "name": "InterContinental Singapore Robertson Quay",
     "location": {
       "destinationId": 5432,
@@ -147,7 +147,7 @@
     "bookingConditions" : []
   },
   {
-    "id": "f8c9",
+    "_id": "f8c9",
     "name": "Hilton Shinjuku Tokyo",
     "location": {
       "destinationId": 1122,
