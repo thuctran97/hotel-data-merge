@@ -1,6 +1,7 @@
 package com.ascenda.hoteldatamerge.scheduler;
 
 
+import com.ascenda.hoteldatamerge.model.Hotel;
 import com.ascenda.hoteldatamerge.model.Supplier;
 import com.ascenda.hoteldatamerge.service.HotelService;
 import com.ascenda.hoteldatamerge.service.SupplierService;
@@ -39,7 +40,10 @@ public class DataLoader {
         supplierList.forEach(supplier -> {
             ResponseEntity<String> response = restTemplate.getForEntity(supplier.getUrl(), String.class);
             JsonArray jsonArray = JsonParser.parseString(Objects.requireNonNull(response.getBody())).getAsJsonArray();
-            jsonArray.asList().forEach(jsonElement -> mongoTemplate.save(jsonElement.toString(), "datalake"));
+            jsonArray.asList().forEach(jsonElement -> {
+                Hotel hotel = hotelService.convertData(jsonElement, supplier.getMappingSchema());
+                mongoTemplate.save(jsonElement.toString(), "datalake");
+            });
         });
     }
 

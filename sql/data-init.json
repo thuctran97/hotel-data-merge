@@ -6,13 +6,12 @@
     "mappingSchema": {
       "id": "Id",
       "name": "Name",
-      "location": {
-        "destinationId": "DestinationId",
-        "country": "Country",
-        "address": "Address",
-        "latitude": "Latitude",
-        "longitude": "Longitude"
-      },
+      "location.destinationId": "DestinationId",
+      "location.country": "Country",
+      "location.city": "City",
+      "location.address": "Address",
+      "location.latitude": "Latitude",
+      "location.longitude": "Longitude",
       "description": "Description",
       "facilities": "Facilities"
     }
@@ -24,19 +23,16 @@
     "mappingSchema": {
       "id": "id",
       "name": "name",
-      "location": {
-        "destinationId": "destination",
-        "address": "address",
-        "latitude": "lat",
-        "longitude": "lng"
-      },
+      "location.destinationId": "destination",
+      "location.address": "address",
+      "location.latitude": "lat",
+      "location.longitude": "lng",
       "description": "info",
-      "amenities": "amenities",
-      "images": {
-        "url": "images.*.url",
-        "description": "images.*.description",
-        "type": "images.*"
-      }
+      "amenities.name": "amenities",
+      "amenities.type": "general",
+      "images.url": "images.*.url",
+      "images.description": "images.*.description",
+      "images.type": "images.*"
     }
   },
   {
@@ -46,18 +42,15 @@
     "mappingSchema": {
       "id": "hotel_id",
       "name": "hotel_name",
-      "destinationId": "destination_id",
-      "location": {
-        "address": "location.address",
-        "country": "location.country"
-      },
+      "location.destinationId": "destination_id",
+      "location.address": "location.address",
+      "location.country": "location.country",
       "description": "details",
-      "amenities": "amenities.*",
-      "images": {
-        "url": "images.*.link",
-        "description": "images.*.caption",
-        "type": "images.*"
-      }
+      "amenities.name":"amenities.*",
+      "amenities.type": "amenities",
+      "images.url": "images.*.link",
+      "images.description": "images.*.caption",
+      "images.type": "images"
     }
   }
 ]

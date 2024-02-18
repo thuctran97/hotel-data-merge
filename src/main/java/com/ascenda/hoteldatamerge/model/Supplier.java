@@ -1,6 +1,5 @@
 package com.ascenda.hoteldatamerge.model;
 
-import com.ascenda.hoteldatamerge.model.mapper.HotelMapper;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,5 +23,5 @@ public class Supplier {
 
     private Integer dataPriorityLevel;
 
-    private HotelMapper mappingSchema;
+    private String mappingSchema;
 }
