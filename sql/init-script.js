@@ -1,3 +1,6 @@
+var db = db.getSiblingDB('hotel-data-merge');
+
+db.suppliers.insert(
 [
   {
     "name": "acme",
@@ -54,3 +57,4 @@
     }
   }
 ]
+);
