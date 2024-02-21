@@ -15,6 +15,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 @Slf4j
@@ -26,6 +28,14 @@ public class HotelServiceImpl implements HotelService {
     private final String IMAGES = "images";
 
     private final String AMENITIES = "amenities";
+
+    private final String URL = "url";
+
+    private final String NAME = "name";
+
+    private final String TYPE = "type";
+
+    private final String DESCRIPTION = "description";
 
     private final String[] specielFields = new String[]{LOCATION, IMAGES, AMENITIES};
 
@@ -83,15 +93,15 @@ public class HotelServiceImpl implements HotelService {
     }
 
     public void setAmenityData(JsonObject hotelObject, JsonObject supplierObject, JsonObject amenityMapperObject){
-        JsonElement nameMapperKey = amenityMapperObject.get("name");
-        JsonElement typeMapperKey = amenityMapperObject.get("type");
+        JsonElement nameMapperKey = amenityMapperObject.get(NAME);
+        JsonElement typeMapperKey = amenityMapperObject.get(TYPE);
         if (AMENITIES.equals(nameMapperKey.toString())){
             List<JsonElement> amenityList = supplierObject.get(AMENITIES).getAsJsonArray().asList();
             JsonArray amenityArray = new JsonArray();
             amenityList.forEach(amenity -> {
                 JsonObject object = new JsonObject();
-                object.add("name", amenity);
-                object.add("type", typeMapperKey);
+                object.add(NAME, amenity);
+                object.add(TYPE, typeMapperKey);
                 amenityArray.add(object);
             });
             hotelObject.add(AMENITIES, amenityArray);
@@ -102,8 +112,8 @@ public class HotelServiceImpl implements HotelService {
                 List<JsonElement> amenityList = amenityObject.get(amenityType).getAsJsonArray().asList();
                 amenityList.forEach(amenity -> {
                     JsonObject object = new JsonObject();
-                    object.add("name", amenity);
-                    object.addProperty("type", amenityType);
+                    object.add(NAME, amenity);
+                    object.addProperty(TYPE, amenityType);
                     amenityArray.add(object);
                 });
             }
@@ -112,5 +122,24 @@ public class HotelServiceImpl implements HotelService {
     }
 
     public void setImageData(JsonObject hotelObject, JsonObject supplierObject, JsonObject imageMapperObject){
+        String urlMapperKey = imageMapperObject.get(URL).toString().replace("\"","");
+        String descriptionMapperKey = imageMapperObject.get(DESCRIPTION).toString().replace("\"","");
+
+        String urlMapper = urlMapperKey.split("\\.")[2];
+        String descriptionMapper = descriptionMapperKey.split("\\.")[2];
+
+        JsonObject imageObject = supplierObject.get(IMAGES).getAsJsonObject();
+        JsonArray imageArray = new JsonArray();
+        for (String imageType: imageObject.keySet()) {
+            List<JsonElement> imageList = imageObject.get(imageType).getAsJsonArray().asList();
+            imageList.forEach(image -> {
+                JsonObject object = new JsonObject();
+                object.add(URL, image.getAsJsonObject().get(urlMapper));
+                object.add(DESCRIPTION, image.getAsJsonObject().get(descriptionMapper));
+                object.addProperty(TYPE, imageType);
+                imageArray.add(object);
+            });
+        }
+        hotelObject.add(IMAGES, imageArray);
     }
 }
