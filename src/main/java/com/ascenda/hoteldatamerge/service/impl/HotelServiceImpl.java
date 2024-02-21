@@ -4,11 +4,17 @@ import com.ascenda.hoteldatamerge.model.Hotel;
 import com.ascenda.hoteldatamerge.repository.HotelRepository;
 import com.ascenda.hoteldatamerge.service.HotelService;
 import com.google.gson.*;
+
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 
 @Service
 @Slf4j
@@ -20,6 +26,8 @@ public class HotelServiceImpl implements HotelService {
     private final String IMAGES = "images";
 
     private final String AMENITIES = "amenities";
+
+    private final String[] specielFields = new String[]{LOCATION, IMAGES, AMENITIES};
 
     private final HotelRepository hotelRepository;
 
@@ -39,55 +47,70 @@ public class HotelServiceImpl implements HotelService {
         JsonObject supplierObject = element.getAsJsonObject();
         JsonObject mapperObject = JsonParser.parseString(mapper).getAsJsonObject();
         JsonObject hotelObject = new JsonObject();
-
+        Arrays.stream(specielFields).forEach(field -> hotelObject.add(field, new JsonObject()));
         mapperObject.entrySet().forEach(entry -> {
             String fieldName = entry.getKey();
-            String fieldValue = entry.getValue().toString().replace("\"","");
-            if (fieldName.startsWith(LOCATION)){
-                setLocationData(hotelObject, supplierObject, fieldName, fieldValue);
+            if (LOCATION.equals(fieldName)){
+                setLocationData(hotelObject, supplierObject, entry.getValue().getAsJsonObject());
                 return;
             }
-            if (fieldName.startsWith(AMENITIES)){
-                setAmenityData(hotelObject, supplierObject, fieldName, fieldValue);
+            if (AMENITIES.equals(fieldName)){
+                setAmenityData(hotelObject, supplierObject, entry.getValue().getAsJsonObject());
                 return;
             }
-            if (fieldName.startsWith(IMAGES)){
-                setImageData(hotelObject, supplierObject, fieldName, fieldValue);
+            if (IMAGES.equals(fieldName)){
+                setImageData(hotelObject, supplierObject, entry.getValue().getAsJsonObject());
                 return;
             }
-            hotelObject.add(fieldName, supplierObject.get(fieldValue));
+            hotelObject.add(fieldName, supplierObject.get(entry.getValue().toString().replace("\"","")));
         });
         log.info("Result: {}", hotelObject);
         return hotel;
     }
 
-    public JsonElement getLocationValue(JsonObject supplierObject, String supplierFieldName){
-        if (supplierFieldName.contains("\\.")){
-            JsonObject locationObject = supplierObject.get(LOCATION).getAsJsonObject();
-            return locationObject.get(supplierFieldName);
+    public void setLocationData(JsonObject hotelObject, JsonObject supplierObject, JsonObject locationMapperObject){
+        JsonObject locationResultObject = hotelObject.get(LOCATION).getAsJsonObject();
+        for (String locationKey: locationMapperObject.keySet()) {
+            String locationValue = locationMapperObject.get(locationKey).toString().replace("\"","");
+            if (locationValue.contains("\\.")){
+                String locationChildFieldKey = locationValue.split("\\.")[1];
+                JsonObject locationSupplierObject = supplierObject.get(LOCATION).getAsJsonObject();
+                locationResultObject.add(locationKey, locationSupplierObject.get(locationChildFieldKey));
+                return;
+            }
+            locationResultObject.add(locationKey, supplierObject.get(locationValue));
         }
-       return supplierObject.get(supplierFieldName);
-
     }
 
-    public void setLocationData(JsonObject hotelObject, JsonObject supplierObject, String fieldName, String fieldValue){
-        String[] properties = fieldName.split("\\.");
-        String childProperty = properties[1];
-        if (hotelObject.has(LOCATION)){
-            JsonObject object = hotelObject.get(LOCATION).getAsJsonObject();
-            object.add(childProperty, getLocationValue(supplierObject, fieldValue));
-            getLocationValue(supplierObject, fieldValue);
+    public void setAmenityData(JsonObject hotelObject, JsonObject supplierObject, JsonObject amenityMapperObject){
+        JsonElement nameMapperKey = amenityMapperObject.get("name");
+        JsonElement typeMapperKey = amenityMapperObject.get("type");
+        if (AMENITIES.equals(nameMapperKey.toString())){
+            List<JsonElement> amenityList = supplierObject.get(AMENITIES).getAsJsonArray().asList();
+            JsonArray amenityArray = new JsonArray();
+            amenityList.forEach(amenity -> {
+                JsonObject object = new JsonObject();
+                object.add("name", amenity);
+                object.add("type", typeMapperKey);
+                amenityArray.add(object);
+            });
+            hotelObject.add(AMENITIES, amenityArray);
         } else {
-            JsonObject object = new JsonObject();
-            object.add(childProperty, getLocationValue(supplierObject, fieldValue));
-            hotelObject.add(LOCATION, object);
+            JsonObject amenityObject = supplierObject.get(AMENITIES).getAsJsonObject();
+            for (String amenityType: amenityObject.keySet()) {
+                List<JsonElement> amenityList = amenityObject.get(amenityType).getAsJsonArray().asList();
+                JsonArray amenityArray = new JsonArray();
+                amenityList.forEach(amenity -> {
+                    JsonObject object = new JsonObject();
+                    object.add("name", amenity);
+                    object.addProperty("type", amenityType);
+                    amenityArray.add(object);
+                });
+                hotelObject.add(AMENITIES, amenityArray);
+            }
         }
     }
-    public void setAmenityData(JsonObject hotelObject, JsonObject supplierObject, String fieldName, String fieldValue){
-        return;
-    }
 
-    public void setImageData(JsonObject hotelObject, JsonObject supplierObject, String fieldName, String fieldValue){
-        return;
+    public void setImageData(JsonObject hotelObject, JsonObject supplierObject, JsonObject imageMapperObject){
     }
 }

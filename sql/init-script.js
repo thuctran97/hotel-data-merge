@@ -9,12 +9,14 @@ db.suppliers.insert(
             "mappingSchema": {
                 "id": "Id",
                 "name": "Name",
-                "location.destinationId": "DestinationId",
-                "location.country": "Country",
-                "location.city": "City",
-                "location.address": "Address",
-                "location.latitude": "Latitude",
-                "location.longitude": "Longitude",
+                "location": {
+                    "destinationId": "DestinationId",
+                    "country": "Country",
+                    "city": "City",
+                    "address": "Address",
+                    "latitude": "Latitude",
+                    "longitude": "Longitude",
+                },
                 "description": "Description",
                 "facilities": "Facilities"
             }
@@ -26,16 +28,22 @@ db.suppliers.insert(
             "mappingSchema": {
                 "id": "id",
                 "name": "name",
-                "location.destinationId": "destination",
-                "location.address": "address",
-                "location.latitude": "lat",
-                "location.longitude": "lng",
+                "location": {
+                    "destinationId": "destination",
+                    "address": "address",
+                    "latitude": "lat",
+                    "longitude": "lng",
+                },
                 "description": "info",
-                "amenities.name": "amenities.[]",
-                "amenities.type": "general",
-                "images.url": "images.*.url",
-                "images.description": "images.*.description",
-                "images.type": "images.*"
+                "amenities":{
+                    "name": "amenities",
+                    "type": "general"
+                },
+                "images": {
+                    "url": "images.*.url",
+                    "description": "images.*.description",
+                    "type": "images.*"
+                }
             }
         },
         {
@@ -45,15 +53,22 @@ db.suppliers.insert(
             "mappingSchema": {
                 "id": "hotel_id",
                 "name": "hotel_name",
-                "location.destinationId": "destination_id",
-                "location.address": "location.address",
-                "location.country": "location.country",
+                "location":{
+                    "destinationId": "destination_id",
+                    "address": "location.address",
+                    "country": "location.country",
+                },
+
                 "description": "details",
-                "amenities.name": "amenities.*.[]",
-                "amenities.type": "amenities.*",
-                "images.url": "images.*.link",
-                "images.description": "images.*.caption",
-                "images.type": "images"
+                "amenities":{
+                    "name": "amenities.*.[]",
+                    "type": "amenities.*"
+                },
+                "images": {
+                    "url": "images.*.link",
+                    "description": "images.*.caption",
+                    "type": "images.*"
+                }
             }
         }
     ]
