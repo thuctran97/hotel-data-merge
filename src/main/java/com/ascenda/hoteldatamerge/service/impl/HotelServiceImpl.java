@@ -15,6 +15,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HotelServiceImpl implements HotelService {
 
+    private final String LOCATION = "location";
+
+    private final String IMAGES = "images";
+
+    private final String AMENITIES = "amenities";
+
     private final HotelRepository hotelRepository;
 
     @Override
@@ -30,30 +36,58 @@ public class HotelServiceImpl implements HotelService {
     @Override
     public Hotel convertData(JsonElement element, String mapper){
         Hotel hotel = new Hotel();
-        JsonObject supplierDataObject = element.getAsJsonObject();
+        JsonObject supplierObject = element.getAsJsonObject();
         JsonObject mapperObject = JsonParser.parseString(mapper).getAsJsonObject();
         JsonObject hotelObject = new JsonObject();
 
         mapperObject.entrySet().forEach(entry -> {
             String fieldName = entry.getKey();
             String fieldValue = entry.getValue().toString().replace("\"","");
-            if (fieldName.contains(".")){
-                String[] properties = fieldName.split("\\.");
-                String fatherProperty = properties[0];
-                String childProperty = properties[1];
-                if (hotelObject.has(fatherProperty)){
-                    JsonObject object = hotelObject.get(fatherProperty).getAsJsonObject();
-                    object.add(childProperty, supplierDataObject.get(fieldValue));
-                } else {
-                    JsonObject object = new JsonObject();
-                    object.add(childProperty, supplierDataObject.get(fieldValue));
-                    hotelObject.add(fatherProperty, object);
-                }
-            } else {
-                hotelObject.add(fieldName, supplierDataObject.get(fieldValue));
+            if (fieldName.startsWith(LOCATION)){
+                setLocationData(hotelObject, supplierObject, fieldName, fieldValue);
+                return;
             }
+            if (fieldName.startsWith(AMENITIES)){
+                setAmenityData(hotelObject, supplierObject, fieldName, fieldValue);
+                return;
+            }
+            if (fieldName.startsWith(IMAGES)){
+                setImageData(hotelObject, supplierObject, fieldName, fieldValue);
+                return;
+            }
+            hotelObject.add(fieldName, supplierObject.get(fieldValue));
         });
         log.info("Result: {}", hotelObject);
         return hotel;
+    }
+
+    public JsonElement getLocationValue(JsonObject supplierObject, String supplierFieldName){
+        if (supplierFieldName.contains("\\.")){
+            JsonObject locationObject = supplierObject.get(LOCATION).getAsJsonObject();
+            return locationObject.get(supplierFieldName);
+        }
+       return supplierObject.get(supplierFieldName);
+
+    }
+
+    public void setLocationData(JsonObject hotelObject, JsonObject supplierObject, String fieldName, String fieldValue){
+        String[] properties = fieldName.split("\\.");
+        String childProperty = properties[1];
+        if (hotelObject.has(LOCATION)){
+            JsonObject object = hotelObject.get(LOCATION).getAsJsonObject();
+            object.add(childProperty, getLocationValue(supplierObject, fieldValue));
+            getLocationValue(supplierObject, fieldValue);
+        } else {
+            JsonObject object = new JsonObject();
+            object.add(childProperty, getLocationValue(supplierObject, fieldValue));
+            hotelObject.add(LOCATION, object);
+        }
+    }
+    public void setAmenityData(JsonObject hotelObject, JsonObject supplierObject, String fieldName, String fieldValue){
+        return;
+    }
+
+    public void setImageData(JsonObject hotelObject, JsonObject supplierObject, String fieldName, String fieldValue){
+        return;
     }
 }
