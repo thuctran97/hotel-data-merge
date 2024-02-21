@@ -72,7 +72,7 @@ public class HotelServiceImpl implements HotelService {
         JsonObject locationResultObject = hotelObject.get(LOCATION).getAsJsonObject();
         for (String locationKey: locationMapperObject.keySet()) {
             String locationValue = locationMapperObject.get(locationKey).toString().replace("\"","");
-            if (locationValue.contains("\\.")){
+            if (locationValue.contains(".")){
                 String locationChildFieldKey = locationValue.split("\\.")[1];
                 JsonObject locationSupplierObject = supplierObject.get(LOCATION).getAsJsonObject();
                 locationResultObject.add(locationKey, locationSupplierObject.get(locationChildFieldKey));
@@ -97,17 +97,17 @@ public class HotelServiceImpl implements HotelService {
             hotelObject.add(AMENITIES, amenityArray);
         } else {
             JsonObject amenityObject = supplierObject.get(AMENITIES).getAsJsonObject();
+            JsonArray amenityArray = new JsonArray();
             for (String amenityType: amenityObject.keySet()) {
                 List<JsonElement> amenityList = amenityObject.get(amenityType).getAsJsonArray().asList();
-                JsonArray amenityArray = new JsonArray();
                 amenityList.forEach(amenity -> {
                     JsonObject object = new JsonObject();
                     object.add("name", amenity);
                     object.addProperty("type", amenityType);
                     amenityArray.add(object);
                 });
-                hotelObject.add(AMENITIES, amenityArray);
             }
+            hotelObject.add(AMENITIES, amenityArray);
         }
     }
 
