@@ -5,40 +5,30 @@ import com.ascenda.hoteldatamerge.repository.HotelRepository;
 import com.ascenda.hoteldatamerge.service.HotelService;
 import com.google.gson.*;
 
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.FieldError;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class HotelServiceImpl implements HotelService {
 
-    private final String LOCATION = "location";
+    private static final String LOCATION = "location";
 
-    private final String IMAGES = "images";
+    private static final String IMAGES = "images";
 
-    private final String AMENITIES = "amenities";
+    private static final String AMENITIES = "amenities";
 
-    private final String URL = "url";
+    private static final String URL = "url";
 
-    private final String NAME = "name";
+    private static final String NAME = "name";
 
-    private final String TYPE = "type";
+    private static final String TYPE = "type";
 
-    private final String DESCRIPTION = "description";
-
-    private final String[] specielFields = new String[]{LOCATION, IMAGES, AMENITIES};
+    private static final String DESCRIPTION = "description";
 
     private final HotelRepository hotelRepository;
 
@@ -53,11 +43,10 @@ public class HotelServiceImpl implements HotelService {
     }
 
     @Override
-    public Hotel convertData(JsonElement element, String mapper){
-        JsonObject supplierObject = element.getAsJsonObject();
-        JsonObject mapperObject = JsonParser.parseString(mapper).getAsJsonObject();
+    public Hotel convertData(JsonObject supplierObject, String mapperSchema){
+        JsonObject mapperObject = JsonParser.parseString(mapperSchema).getAsJsonObject();
         JsonObject hotelObject = new JsonObject();
-        Arrays.stream(specielFields).forEach(field -> hotelObject.add(field, new JsonObject()));
+
         mapperObject.entrySet().forEach(entry -> {
             String fieldName = entry.getKey();
             JsonElement fieldValue = entry.getValue();
@@ -73,6 +62,7 @@ public class HotelServiceImpl implements HotelService {
                 setImageData(hotelObject, supplierObject, fieldValue.getAsJsonObject());
                 return;
             }
+
             hotelObject.add(fieldName, supplierObject.get(fieldValue.toString()));
         });
         return new Gson().fromJson(hotelObject, Hotel.class);
@@ -84,17 +74,18 @@ public class HotelServiceImpl implements HotelService {
     }
 
     public void setLocationData(JsonObject hotelObject, JsonObject supplierObject, JsonObject locationMapperObject){
-        JsonObject locationResultObject = hotelObject.get(LOCATION).getAsJsonObject();
+        JsonObject locationObject = new JsonObject();
         for (String locationKey: locationMapperObject.keySet()) {
-            String locationValue = getValueFromJsonObject(locationMapperObject, locationKey);
-            if (locationValue.contains(".")){
-                String locationChildFieldKey = locationValue.split("\\.")[1];
-                JsonObject locationSupplierObject = supplierObject.get(LOCATION).getAsJsonObject();
-                locationResultObject.add(locationKey, locationSupplierObject.get(locationChildFieldKey));
+            String supplierKey = getValueFromJsonObject(locationMapperObject, locationKey);
+            if (supplierKey.contains(".")){
+                String supplierKey2 = supplierKey.split("\\.")[1];
+                JsonObject supplierLocationObject = supplierObject.get(LOCATION).getAsJsonObject();
+                locationObject.add(locationKey, supplierLocationObject.get(supplierKey2));
                 return;
             }
-            locationResultObject.add(locationKey, supplierObject.get(locationValue));
+            locationObject.add(locationKey, supplierObject.get(supplierKey));
         }
+        hotelObject.add(LOCATION, locationObject);
     }
 
     public void setAmenityData(JsonObject hotelObject, JsonObject supplierObject, JsonObject amenityMapperObject){

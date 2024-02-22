@@ -6,6 +6,7 @@ import com.ascenda.hoteldatamerge.model.Supplier;
 import com.ascenda.hoteldatamerge.service.HotelService;
 import com.ascenda.hoteldatamerge.service.SupplierService;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,10 +38,10 @@ public class DataLoader {
         supplierList.forEach(supplier -> {
             ResponseEntity<String> response = restTemplate.getForEntity(supplier.getUrl(), String.class);
             JsonArray jsonArray = JsonParser.parseString(Objects.requireNonNull(response.getBody())).getAsJsonArray();
-            jsonArray.asList().forEach(jsonElement -> {
-                Hotel hotel = hotelService.convertData(jsonElement, supplier.getMappingSchema());
+            jsonArray.asList().stream().map(JsonElement::getAsJsonObject).forEach(jsonObject -> {
+                Hotel hotel = hotelService.convertData(jsonObject, supplier.getMappingSchema());
                 log.info("Hotel Data: {}", hotel.toString());
-                mongoTemplate.save(jsonElement.toString(), "datalake");
+                mongoTemplate.save(jsonObject.toString(), "datalake");
             });
         });
     }

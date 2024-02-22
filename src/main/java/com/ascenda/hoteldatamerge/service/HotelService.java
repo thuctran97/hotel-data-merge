@@ -1,12 +1,12 @@
 package com.ascenda.hoteldatamerge.service;
 
 import com.ascenda.hoteldatamerge.model.Hotel;
-import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 import java.util.List;
 
 public interface HotelService {
-    Hotel convertData(JsonElement element, String mapper);
+    Hotel convertData(JsonObject element, String mapper);
 
     List<Hotel> findById(List<String> id);
 
