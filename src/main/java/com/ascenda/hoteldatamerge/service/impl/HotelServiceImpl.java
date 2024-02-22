@@ -68,15 +68,10 @@ public class HotelServiceImpl implements HotelService {
         return new Gson().fromJson(hotelObject, Hotel.class);
     }
 
-    public String getValueFromJsonObject(JsonObject jsonObject, String key){
-        String value = jsonObject.get(key).toString();
-        return value.replace("\"","");
-    }
-
     public void setLocationData(JsonObject hotelObject, JsonObject supplierObject, JsonObject locationMapperObject){
         JsonObject locationObject = new JsonObject();
         for (String locationKey: locationMapperObject.keySet()) {
-            String supplierKey = getValueFromJsonObject(locationMapperObject, locationKey);
+            String supplierKey = locationMapperObject.get(locationKey).getAsString();
             if (supplierKey.contains(".")){
                 String supplierKey2 = supplierKey.split("\\.")[1];
                 JsonObject supplierLocationObject = supplierObject.get(LOCATION).getAsJsonObject();
@@ -89,8 +84,8 @@ public class HotelServiceImpl implements HotelService {
     }
 
     public void setAmenityData(JsonObject hotelObject, JsonObject supplierObject, JsonObject amenityMapperObject){
-        String nameMapperKey = getValueFromJsonObject(amenityMapperObject, NAME);
-        String typeMapperKey = getValueFromJsonObject(amenityMapperObject, TYPE);
+        String nameMapperKey = amenityMapperObject.get(NAME).getAsString();
+        String typeMapperKey = amenityMapperObject.get(TYPE).getAsString();
 
         if (AMENITIES.equals(nameMapperKey)){
             List<JsonElement> amenityList = supplierObject.get(AMENITIES).getAsJsonArray().asList();
@@ -119,8 +114,8 @@ public class HotelServiceImpl implements HotelService {
     }
 
     public void setImageData(JsonObject hotelObject, JsonObject supplierObject, JsonObject imageMapperObject){
-        String urlMapperKey = getValueFromJsonObject(imageMapperObject, URL);
-        String descriptionMapperKey = getValueFromJsonObject(imageMapperObject, DESCRIPTION);
+        String urlMapperKey = imageMapperObject.get(URL).getAsString();
+        String descriptionMapperKey = imageMapperObject.get(DESCRIPTION).getAsString();
 
         String urlMapper = urlMapperKey.split("\\.")[2];
         String descriptionMapper = descriptionMapperKey.split("\\.")[2];
