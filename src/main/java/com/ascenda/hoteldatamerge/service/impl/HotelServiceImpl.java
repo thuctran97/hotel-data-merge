@@ -9,6 +9,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.FieldError;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,35 +54,39 @@ public class HotelServiceImpl implements HotelService {
 
     @Override
     public Hotel convertData(JsonElement element, String mapper){
-        Hotel hotel = new Hotel();
         JsonObject supplierObject = element.getAsJsonObject();
         JsonObject mapperObject = JsonParser.parseString(mapper).getAsJsonObject();
         JsonObject hotelObject = new JsonObject();
         Arrays.stream(specielFields).forEach(field -> hotelObject.add(field, new JsonObject()));
         mapperObject.entrySet().forEach(entry -> {
             String fieldName = entry.getKey();
+            JsonElement fieldValue = entry.getValue();
             if (LOCATION.equals(fieldName)){
-                setLocationData(hotelObject, supplierObject, entry.getValue().getAsJsonObject());
+                setLocationData(hotelObject, supplierObject, fieldValue.getAsJsonObject());
                 return;
             }
             if (AMENITIES.equals(fieldName)){
-                setAmenityData(hotelObject, supplierObject, entry.getValue().getAsJsonObject());
+                setAmenityData(hotelObject, supplierObject, fieldValue.getAsJsonObject());
                 return;
             }
             if (IMAGES.equals(fieldName)){
-                setImageData(hotelObject, supplierObject, entry.getValue().getAsJsonObject());
+                setImageData(hotelObject, supplierObject, fieldValue.getAsJsonObject());
                 return;
             }
-            hotelObject.add(fieldName, supplierObject.get(entry.getValue().toString().replace("\"","")));
+            hotelObject.add(fieldName, supplierObject.get(fieldValue.toString()));
         });
-        log.info("Result: {}", hotelObject);
-        return hotel;
+        return new Gson().fromJson(hotelObject, Hotel.class);
+    }
+
+    public String getValueFromJsonObject(JsonObject jsonObject, String key){
+        String value = jsonObject.get(key).toString();
+        return value.replace("\"","");
     }
 
     public void setLocationData(JsonObject hotelObject, JsonObject supplierObject, JsonObject locationMapperObject){
         JsonObject locationResultObject = hotelObject.get(LOCATION).getAsJsonObject();
         for (String locationKey: locationMapperObject.keySet()) {
-            String locationValue = locationMapperObject.get(locationKey).toString().replace("\"","");
+            String locationValue = getValueFromJsonObject(locationMapperObject, locationKey);
             if (locationValue.contains(".")){
                 String locationChildFieldKey = locationValue.split("\\.")[1];
                 JsonObject locationSupplierObject = supplierObject.get(LOCATION).getAsJsonObject();
@@ -93,15 +98,16 @@ public class HotelServiceImpl implements HotelService {
     }
 
     public void setAmenityData(JsonObject hotelObject, JsonObject supplierObject, JsonObject amenityMapperObject){
-        JsonElement nameMapperKey = amenityMapperObject.get(NAME);
-        JsonElement typeMapperKey = amenityMapperObject.get(TYPE);
-        if (AMENITIES.equals(nameMapperKey.toString())){
+        String nameMapperKey = getValueFromJsonObject(amenityMapperObject, NAME);
+        String typeMapperKey = getValueFromJsonObject(amenityMapperObject, TYPE);
+
+        if (AMENITIES.equals(nameMapperKey)){
             List<JsonElement> amenityList = supplierObject.get(AMENITIES).getAsJsonArray().asList();
             JsonArray amenityArray = new JsonArray();
             amenityList.forEach(amenity -> {
                 JsonObject object = new JsonObject();
                 object.add(NAME, amenity);
-                object.add(TYPE, typeMapperKey);
+                object.addProperty(TYPE, typeMapperKey);
                 amenityArray.add(object);
             });
             hotelObject.add(AMENITIES, amenityArray);
@@ -122,8 +128,8 @@ public class HotelServiceImpl implements HotelService {
     }
 
     public void setImageData(JsonObject hotelObject, JsonObject supplierObject, JsonObject imageMapperObject){
-        String urlMapperKey = imageMapperObject.get(URL).toString().replace("\"","");
-        String descriptionMapperKey = imageMapperObject.get(DESCRIPTION).toString().replace("\"","");
+        String urlMapperKey = getValueFromJsonObject(imageMapperObject, URL);
+        String descriptionMapperKey = getValueFromJsonObject(imageMapperObject, DESCRIPTION);
 
         String urlMapper = urlMapperKey.split("\\.")[2];
         String descriptionMapper = descriptionMapperKey.split("\\.")[2];

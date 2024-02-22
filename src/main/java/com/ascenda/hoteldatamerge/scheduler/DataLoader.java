@@ -39,6 +39,7 @@ public class DataLoader {
             JsonArray jsonArray = JsonParser.parseString(Objects.requireNonNull(response.getBody())).getAsJsonArray();
             jsonArray.asList().forEach(jsonElement -> {
                 Hotel hotel = hotelService.convertData(jsonElement, supplier.getMappingSchema());
+                log.info("Hotel Data: {}", hotel.toString());
                 mongoTemplate.save(jsonElement.toString(), "datalake");
             });
         });
