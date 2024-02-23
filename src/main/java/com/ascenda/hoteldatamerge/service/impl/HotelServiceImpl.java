@@ -59,9 +59,12 @@ public class HotelServiceImpl implements HotelService {
 	}
 
 	public void addToObject(JsonObject object, String key, JsonElement value) {
-		if (value == null) {
+		if (value.isJsonNull()) {
 			return;
 		}
+        if (value.isJsonPrimitive() && value.getAsString().isEmpty()){
+            return;
+        }
 		object.add(key, value);
 	}
 
@@ -84,7 +87,7 @@ public class HotelServiceImpl implements HotelService {
 		String nameMapperKey = amenityMapperObject.get(NAME).getAsString();
 		String typeMapperKey = amenityMapperObject.get(TYPE).getAsString();
 		JsonElement amenityElement = supplierObject.get(AMENITIES);
-		if (amenityElement == null) {
+		if (amenityElement.isJsonNull()){
 			return;
 		}
 		if (AMENITIES.equals(nameMapperKey)) {

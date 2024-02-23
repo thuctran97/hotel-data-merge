@@ -39,7 +39,6 @@ public class DataLoader {
 
 		Map<Integer, String> mappingMap = getMappingMap(supplierList);
 		List<String> hotelData = datalakeService.getAllDocuments();
-		log.info("DOCUMENTS SIZE: {}", hotelData.size());
 
 		transformData(hotelData, mappingMap);
 		datalakeService.clearCollection();
@@ -55,7 +54,7 @@ public class DataLoader {
 			Integer priorityLevel = supplierObject.get(PRIORITY_LEVEL).getAsInt();
 			JsonObject schemaObject = convertToJsonObject(mappingMap.get(priorityLevel));
 			Hotel hotel = hotelService.convertData(supplierObject, schemaObject);
-			log.info("HOTEL: {}", hotel);
+
 		});
 	}
 
