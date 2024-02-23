@@ -43,8 +43,7 @@ public class HotelServiceImpl implements HotelService {
     }
 
     @Override
-    public Hotel convertData(JsonObject supplierObject, String mapperSchema){
-        JsonObject mapperObject = JsonParser.parseString(mapperSchema).getAsJsonObject();
+    public Hotel convertData(JsonObject supplierObject, JsonObject mapperObject){
         JsonObject hotelObject = new JsonObject();
 
         mapperObject.entrySet().forEach(entry -> {

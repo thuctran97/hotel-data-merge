@@ -1,12 +1,16 @@
 package com.ascenda.hoteldatamerge.scheduler;
 
 
+import com.ascenda.hoteldatamerge.model.Hotel;
 import com.ascenda.hoteldatamerge.model.Supplier;
 import com.ascenda.hoteldatamerge.repository.HotelRepository;
+import com.ascenda.hoteldatamerge.service.DatalakeService;
 import com.ascenda.hoteldatamerge.service.HotelService;
 import com.ascenda.hoteldatamerge.service.SupplierService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,9 +23,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 @Component
 @Slf4j
@@ -36,30 +40,40 @@ public class DataLoader {
 
     private final HotelService hotelService;
 
-    private final RestTemplate restTemplate;
-
-    private final MongoTemplate mongoTemplate;
-
-    private final HotelRepository hotelRepository;
+    private final DatalakeService datalakeService;
 
     @Scheduled(cron = "*/5 * * * * ?")
     public void doDataLoader() {
         log.info("START DATA LOADER");
         List<Supplier> supplierList = supplierService.getAllSuppliers();
-        supplierList.forEach(supplier -> {
-            ResponseEntity<String> response = restTemplate.getForEntity(supplier.getUrl(), String.class);
-            JsonArray jsonArray = JsonParser.parseString(Objects.requireNonNull(response.getBody())).getAsJsonArray();
-            jsonArray.asList().stream().map(JsonElement::getAsJsonObject).forEach(jsonObject -> {
-                jsonObject.add(PRIORITY_LEVEL, JsonParser.parseString(supplier.getDataPriorityLevel().toString()));
-                mongoTemplate.save(jsonObject.toString(), DATA_LAKE_COLLECTION);
-            });
-        });
+        supplierService.extractAndInsertData(supplierList);
 
-        Query query = new Query();
-        query.with(Sort.by(Sort.Direction.ASC, PRIORITY_LEVEL));
-        List<Map> documents = mongoTemplate.find(query, Map.class, DATA_LAKE_COLLECTION);
-        log.info("DOCUMENTS SIZE: {}", documents.size());
-        mongoTemplate.remove(new Query(), DATA_LAKE_COLLECTION);
+        Map<Integer, String> mappingMap = getMappingMap(supplierList);
+        List<String> hotelData = datalakeService.getAllDocuments();
+        log.info("DOCUMENTS SIZE: {}", hotelData.size());
+
+        transformData(hotelData, mappingMap);
+        datalakeService.clearCollection();
+    }
+
+    public JsonObject convertToJsonObject(String input){
+        return JsonParser.parseString(input).getAsJsonObject();
+    }
+
+    public void transformData(List<String> supplierDataMap, Map<Integer, String> mappingMap){
+        supplierDataMap.forEach(supplierData -> {
+            JsonObject supplierObject = convertToJsonObject(supplierData);
+            JsonObject schemaObject = convertToJsonObject(mappingMap.get(supplierObject.get(PRIORITY_LEVEL).getAsInt()));
+            Hotel hotel = hotelService.convertData(supplierObject, schemaObject);
+            log.info("HOTEL: {}", hotel);
+        });
+    }
+
+
+    public Map<Integer, String> getMappingMap(List<Supplier> supplierList){
+        Map<Integer, String> result = new HashMap<>();
+        supplierList.forEach(supplier -> result.put(supplier.getDataPriorityLevel(), supplier.getMappingSchema()));
+        return result;
     }
 
 }

@@ -8,4 +8,6 @@ public interface SupplierService {
 
     List<Supplier> getAllSuppliers();
 
+    void extractAndInsertData(List<Supplier> supplierList);
+
 }

@@ -6,7 +6,7 @@ import com.google.gson.JsonObject;
 import java.util.List;
 
 public interface HotelService {
-    Hotel convertData(JsonObject element, String mapper);
+    Hotel convertData(JsonObject supplierObject, JsonObject mapperObject);
 
     List<Hotel> findById(List<String> id);
 
