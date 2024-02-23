@@ -1,11 +1,12 @@
 package com.ascenda.hoteldatamerge.model;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "suppliers")
 @Data
@@ -14,14 +15,14 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NoArgsConstructor
 public class Supplier {
 
-    @Id
-    private String id;
+	@Id
+	private String id;
 
-    private String name;
+	private String name;
 
-    private String url;
+	private String url;
 
-    private Integer dataPriorityLevel;
+	private Integer dataPriorityLevel;
 
-    private String mappingSchema;
+	private String mappingSchema;
 }

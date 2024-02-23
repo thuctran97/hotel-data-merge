@@ -1,5 +1,7 @@
 package com.ascenda.hoteldatamerge.service.impl;
 
+import static com.ascenda.hoteldatamerge.constant.StringConstant.*;
+
 import java.util.List;
 
 import org.springframework.data.domain.Sort;
@@ -16,10 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 public class DatalakeServiceImpl implements DatalakeService {
-
-	private static final String DATA_LAKE_COLLECTION = "data-lake";
-
-	private static final String PRIORITY_LEVEL = "priorityLevel";
 
 	private final MongoTemplate mongoTemplate;
 

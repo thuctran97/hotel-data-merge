@@ -10,9 +10,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Image {
-    private String url;
+	private String url;
 
-    private String description;
+	private String description;
 
-    private String type;
+	private String type;
 }

@@ -10,15 +10,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Location {
-    private String destinationId;
+	private String destinationId;
 
-    private String address;
+	private String address;
 
-    private String city;
+	private String city;
 
-    private String country;
+	private String country;
 
-    private Float latitude;
+	private Float latitude;
 
-    private Float longitude;
+	private Float longitude;
 }

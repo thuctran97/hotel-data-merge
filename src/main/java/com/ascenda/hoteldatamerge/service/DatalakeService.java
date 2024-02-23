@@ -4,8 +4,8 @@ import java.util.List;
 
 public interface DatalakeService {
 
-    void clearCollection();
+	void clearCollection();
 
-    List<String> getAllDocuments();
+	List<String> getAllDocuments();
 
 }

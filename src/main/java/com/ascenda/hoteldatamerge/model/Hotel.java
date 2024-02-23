@@ -1,11 +1,12 @@
 package com.ascenda.hoteldatamerge.model;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "hotels")
 @Data
@@ -14,20 +15,20 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NoArgsConstructor
 public class Hotel {
 
-    @Id
-    private String id;
+	@Id
+	private String id;
 
-    private String name;
+	private String name;
 
-    private String description;
+	private String description;
 
-    private String[] facilities;
+	private String[] facilities;
 
-    private Amenity[] amenities;
+	private Amenity[] amenities;
 
-    private Location location;
+	private Location location;
 
-    private Image[] image;
+	private Image[] image;
 
-    private String[] bookingConditions;
+	private String[] bookingConditions;
 }

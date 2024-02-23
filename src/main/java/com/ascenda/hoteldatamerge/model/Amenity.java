@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Amenity {
-    private String name;
+	private String name;
 
-    private String type;
+	private String type;
 }

@@ -1,13 +1,13 @@
 package com.ascenda.hoteldatamerge.service;
 
-import com.ascenda.hoteldatamerge.model.Supplier;
-
 import java.util.List;
+
+import com.ascenda.hoteldatamerge.model.Supplier;
 
 public interface SupplierService {
 
-    List<Supplier> getAllSuppliers();
+	List<Supplier> getAllSuppliers();
 
-    void extractAndInsertData(List<Supplier> supplierList);
+	void extractAndInsertData(List<Supplier> supplierList);
 
 }
