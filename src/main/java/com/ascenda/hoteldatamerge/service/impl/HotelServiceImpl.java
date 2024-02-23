@@ -62,33 +62,42 @@ public class HotelServiceImpl implements HotelService {
                 setImageData(hotelObject, supplierObject, fieldValue.getAsJsonObject());
                 return;
             }
-
-            hotelObject.add(fieldName, supplierObject.get(fieldValue.toString()));
+			addToObject(hotelObject, fieldName, supplierObject.get(fieldValue.getAsString()));
         });
         return new Gson().fromJson(hotelObject, Hotel.class);
     }
 
+	public void addToObject(JsonObject object, String key, JsonElement value){
+		if (value == null){
+			return;
+		}
+		object.add(key, value);
+	}
+
     public void setLocationData(JsonObject hotelObject, JsonObject supplierObject, JsonObject locationMapperObject){
         JsonObject locationObject = new JsonObject();
-        for (String locationKey: locationMapperObject.keySet()) {
+        locationMapperObject.keySet().forEach(locationKey -> {
             String supplierKey = locationMapperObject.get(locationKey).getAsString();
             if (supplierKey.contains(".")){
                 String supplierKey2 = supplierKey.split("\\.")[1];
                 JsonObject supplierLocationObject = supplierObject.get(LOCATION).getAsJsonObject();
-                locationObject.add(locationKey, supplierLocationObject.get(supplierKey2));
+				addToObject(locationObject, locationKey, supplierLocationObject.get(supplierKey2));
                 return;
             }
-            locationObject.add(locationKey, supplierObject.get(supplierKey));
-        }
+            addToObject(locationObject, locationKey, supplierObject.get(supplierKey));
+        });
         hotelObject.add(LOCATION, locationObject);
     }
 
     public void setAmenityData(JsonObject hotelObject, JsonObject supplierObject, JsonObject amenityMapperObject){
         String nameMapperKey = amenityMapperObject.get(NAME).getAsString();
         String typeMapperKey = amenityMapperObject.get(TYPE).getAsString();
-
+		JsonElement amenityElement = supplierObject.get(AMENITIES);
+		if (amenityElement == null) {
+			return;
+		}
         if (AMENITIES.equals(nameMapperKey)){
-            List<JsonElement> amenityList = supplierObject.get(AMENITIES).getAsJsonArray().asList();
+            List<JsonElement> amenityList = amenityElement.getAsJsonArray().asList();
             JsonArray amenityArray = new JsonArray();
             amenityList.forEach(amenity -> {
                 JsonObject object = new JsonObject();
@@ -98,7 +107,7 @@ public class HotelServiceImpl implements HotelService {
             });
             hotelObject.add(AMENITIES, amenityArray);
         } else {
-            JsonObject amenityObject = supplierObject.get(AMENITIES).getAsJsonObject();
+            JsonObject amenityObject = amenityElement.getAsJsonObject();
             JsonArray amenityArray = new JsonArray();
             for (String amenityType: amenityObject.keySet()) {
                 List<JsonElement> amenityList = amenityObject.get(amenityType).getAsJsonArray().asList();
