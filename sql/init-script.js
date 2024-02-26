@@ -68,7 +68,8 @@ db.suppliers.insert(
                     "url": "images.*.link",
                     "description": "images.*.caption",
                     "type": "images.*"
-                }
+                },
+                "bookingConditions":"booking_conditions"
             }
         }
     ]

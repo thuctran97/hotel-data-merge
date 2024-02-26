@@ -59,17 +59,17 @@ public class HotelServiceImpl implements HotelService {
 		for (Field field : hotelFields) {
 			field.setAccessible(true);
 			try {
-				Object valueA = field.get(hotel);
+				Object valueA = field.get(existingHotel);
 				if (valueA == null) {
 					Object valueB = field.get(hotel);
-					field.set(hotel, valueB);
+					field.set(existingHotel, valueB);
 				}
 			} catch (IllegalAccessException e) {
 				e.printStackTrace();
 			}
 		}
 		hotelRepository.deleteById(existingHotel.getId());
-		hotelRepository.insert(hotel);
+        hotelRepository.insert(existingHotel);
 	}
 
 	@Override

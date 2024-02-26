@@ -28,7 +28,7 @@ public class Hotel {
 
 	private Location location;
 
-	private Image[] image;
+	private Image[] images;
 
 	private String[] bookingConditions;
 }
