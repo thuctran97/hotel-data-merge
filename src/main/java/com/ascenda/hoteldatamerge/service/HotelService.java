@@ -15,5 +15,5 @@ public interface HotelService {
 
 	Hotel findById(String id);
 
-	Hotel findByDestinationId(Integer destinationId);
+	List<Hotel> findByDestinationId(Integer destinationId);
 }

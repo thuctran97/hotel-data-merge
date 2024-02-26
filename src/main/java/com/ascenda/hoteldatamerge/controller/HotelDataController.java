@@ -28,7 +28,7 @@ public class HotelDataController {
 	}
 
 	@GetMapping("/get/destination")
-	public Hotel getHotelDataByDestinationId(@RequestParam String destinationId) {
+	public List<Hotel> getHotelDataByDestinationId(@RequestParam String destinationId) {
 		log.info("GET HOTEL DATA USING DESTINATION ID: {}", destinationId);
 		return hotelService.findByDestinationId(Integer.parseInt(destinationId));
 	}

@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Location {
-	private String destinationId;
+	private Integer destinationId;
 
 	private String address;
 

@@ -45,8 +45,8 @@ public class HotelServiceImpl implements HotelService {
 	}
 
 	@Override
-	public Hotel findByDestinationId(Integer destinationIds) {
-		return hotelRepository.findByLocation_DestinationId(destinationIds);
+	public List<Hotel> findByDestinationId(Integer destinationId) {
+		return hotelRepository.findByLocation_DestinationId(destinationId);
 	}
 
 	public void insertData(Hotel hotel) {
