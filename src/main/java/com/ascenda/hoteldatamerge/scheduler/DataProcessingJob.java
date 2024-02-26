@@ -28,18 +28,27 @@ public class DataProcessingJob {
 
 	@Scheduled(cron = "*/10 * * * * ?")
 	public void doDataProcessing() {
-		log.info("START DATA EXTRACTING + LOADING");
-		List<Supplier> supplierList = supplierService.getAllSuppliers();
-		supplierService.extractAndLoadData(supplierList);
-		log.info("END DATA EXTRACTING + LOADING");
+		doDataExtractingAndLoading();
+		doDataTransforming();
+	}
 
-		Map<Integer, String> mappingMap = getMappingMap(supplierList);
-		List<String> hotelData = datalakeService.getAllDocuments();
+	public void doDataExtractingAndLoading(){
+		log.info("START DATA EXTRACTING + LOADING JOB");
 
+		supplierService.extractAndLoadData(supplierService.getAllSuppliers());
+
+		log.info("END DATA EXTRACTING + LOADING JOB");
+	}
+
+	public void doDataTransforming(){
 		log.info("START DATA TRANSFORMING");
-		hotelService.transformData(hotelData, mappingMap);
+
+		Map<Integer, String> referenceMap = getMappingMap(supplierService.getAllSuppliers());
+		List<String> supplierDataList = datalakeService.getAllDocuments();
+		hotelService.transformData(supplierDataList, referenceMap);
 		datalakeService.clearCollection();
-		log.info("END DATA TRANSFORMING");
+
+		log.info("END DATA TRANSFORMING JOB");
 	}
 
 	public Map<Integer, String> getMappingMap(List<Supplier> supplierList) {

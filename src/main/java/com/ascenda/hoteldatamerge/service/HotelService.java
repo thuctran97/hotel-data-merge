@@ -7,9 +7,7 @@ import com.ascenda.hoteldatamerge.model.Hotel;
 import com.google.gson.JsonObject;
 
 public interface HotelService {
-	Hotel mapData(JsonObject supplierObject, JsonObject mapperObject);
-
-	void transformData(List<String> supplierDataMap, Map<Integer, String> mappingMap);
+	void transformData(List<String> supplierDataList, Map<Integer, String> referenceMap);
 
 	List<Hotel> findAllById(List<String> id);
 

@@ -73,17 +73,16 @@ public class HotelServiceImpl implements HotelService {
 	}
 
 	@Override
-	public void transformData(List<String> supplierDataMap, Map<Integer, String> mappingMap) {
-		supplierDataMap.forEach(supplierData -> {
+	public void transformData(List<String> supplierDataList, Map<Integer, String> referenceMap) {
+		supplierDataList.forEach(supplierData -> {
 			JsonObject supplierObject = convertToJsonObject(supplierData);
 			Integer priorityLevel = supplierObject.get(PRIORITY_LEVEL).getAsInt();
-			JsonObject schemaObject = convertToJsonObject(mappingMap.get(priorityLevel));
+			JsonObject schemaObject = convertToJsonObject(referenceMap.get(priorityLevel));
 			Hotel hotel = mapData(supplierObject, schemaObject);
 			insertData(hotel);
 		});
 	}
 
-	@Override
 	public Hotel mapData(JsonObject supplierObject, JsonObject mapperObject) {
 		JsonObject hotelObject = new JsonObject();
 
