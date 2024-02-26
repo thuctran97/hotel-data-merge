@@ -2,7 +2,6 @@ package com.ascenda.hoteldatamerge.service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import com.ascenda.hoteldatamerge.model.Hotel;
 import com.google.gson.JsonObject;

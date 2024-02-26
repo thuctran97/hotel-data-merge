@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class HotelServiceImpl implements HotelService {
 
-    private final Field[] hotelFields = Hotel.class.getDeclaredFields();
+	private final Field[] hotelFields = Hotel.class.getDeclaredFields();
 
 	private final HotelRepository hotelRepository;
 
@@ -35,53 +35,53 @@ public class HotelServiceImpl implements HotelService {
 		return hotelRepository.findAllById(ids);
 	}
 
-    @Override
-    public Hotel findById(String id) {
-        Optional<Hotel> hotel = hotelRepository.findById(id);
-        if (hotel.isEmpty()){
-            return null;
-        }
-        return hotel.get();
-    }
+	@Override
+	public Hotel findById(String id) {
+		Optional<Hotel> hotel = hotelRepository.findById(id);
+		if (hotel.isEmpty()) {
+			return null;
+		}
+		return hotel.get();
+	}
 
 	@Override
 	public Hotel findByDestinationId(Integer destinationIds) {
 		return hotelRepository.findByLocation_DestinationId(destinationIds);
 	}
 
-    public void insertData(Hotel hotel){
-        Hotel existingHotel = findById(hotel.getId());
-        if (existingHotel == null){
-            hotelRepository.insert(hotel);
-            return;
-        }
+	public void insertData(Hotel hotel) {
+		Hotel existingHotel = findById(hotel.getId());
+		if (existingHotel == null) {
+			hotelRepository.insert(hotel);
+			return;
+		}
 
-        for(Field field : hotelFields){
-            field.setAccessible(true);
-            try {
-                Object valueA = field.get(hotel);
-                if (valueA == null) {
-                    Object valueB = field.get(hotel);
-                    field.set(hotel, valueB);
-                }
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        }
-        hotelRepository.deleteById(existingHotel.getId());
-        hotelRepository.insert(hotel);
-    }
+		for (Field field : hotelFields) {
+			field.setAccessible(true);
+			try {
+				Object valueA = field.get(hotel);
+				if (valueA == null) {
+					Object valueB = field.get(hotel);
+					field.set(hotel, valueB);
+				}
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			}
+		}
+		hotelRepository.deleteById(existingHotel.getId());
+		hotelRepository.insert(hotel);
+	}
 
-    @Override
-    public void transformData(List<String> supplierDataMap, Map<Integer, String> mappingMap) {
-        supplierDataMap.forEach(supplierData -> {
-            JsonObject supplierObject = convertToJsonObject(supplierData);
-            Integer priorityLevel = supplierObject.get(PRIORITY_LEVEL).getAsInt();
-            JsonObject schemaObject = convertToJsonObject(mappingMap.get(priorityLevel));
-            Hotel hotel = mapData(supplierObject, schemaObject);
-            insertData(hotel);
-        });
-    }
+	@Override
+	public void transformData(List<String> supplierDataMap, Map<Integer, String> mappingMap) {
+		supplierDataMap.forEach(supplierData -> {
+			JsonObject supplierObject = convertToJsonObject(supplierData);
+			Integer priorityLevel = supplierObject.get(PRIORITY_LEVEL).getAsInt();
+			JsonObject schemaObject = convertToJsonObject(mappingMap.get(priorityLevel));
+			Hotel hotel = mapData(supplierObject, schemaObject);
+			insertData(hotel);
+		});
+	}
 
 	@Override
 	public Hotel mapData(JsonObject supplierObject, JsonObject mapperObject) {
@@ -111,9 +111,9 @@ public class HotelServiceImpl implements HotelService {
 		if (value.isJsonNull()) {
 			return;
 		}
-        if (value.isJsonPrimitive() && value.getAsString().isEmpty()){
-            return;
-        }
+		if (value.isJsonPrimitive() && value.getAsString().isEmpty()) {
+			return;
+		}
 		object.add(key, value);
 	}
 
@@ -136,7 +136,7 @@ public class HotelServiceImpl implements HotelService {
 		String nameMapperKey = amenityMapperObject.get(NAME).getAsString();
 		String typeMapperKey = amenityMapperObject.get(TYPE).getAsString();
 		JsonElement amenityElement = supplierObject.get(AMENITIES);
-		if (amenityElement.isJsonNull()){
+		if (amenityElement.isJsonNull()) {
 			return;
 		}
 		if (AMENITIES.equals(nameMapperKey)) {
@@ -187,7 +187,7 @@ public class HotelServiceImpl implements HotelService {
 		hotelObject.add(IMAGES, imageArray);
 	}
 
-    public JsonObject convertToJsonObject(String input) {
-        return JsonParser.parseString(input).getAsJsonObject();
-    }
+	public JsonObject convertToJsonObject(String input) {
+		return JsonParser.parseString(input).getAsJsonObject();
+	}
 }
