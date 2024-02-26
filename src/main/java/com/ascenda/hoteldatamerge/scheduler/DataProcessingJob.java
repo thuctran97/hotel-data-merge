@@ -1,7 +1,6 @@
 package com.ascenda.hoteldatamerge.scheduler;
 
-import static com.ascenda.hoteldatamerge.constant.StringConstant.*;
-
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,13 +8,10 @@ import java.util.Map;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.ascenda.hoteldatamerge.model.Hotel;
 import com.ascenda.hoteldatamerge.model.Supplier;
 import com.ascenda.hoteldatamerge.service.DatalakeService;
 import com.ascenda.hoteldatamerge.service.HotelService;
 import com.ascenda.hoteldatamerge.service.SupplierService;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class DataLoader {
+public class DataProcessingJob {
 
 	private final SupplierService supplierService;
 
@@ -31,31 +27,20 @@ public class DataLoader {
 
 	private final DatalakeService datalakeService;
 
-	@Scheduled(cron = "*/5 * * * * ?")
-	public void doDataLoader() {
-		log.info("START DATA LOADER");
+	@Scheduled(cron = "*/10 * * * * ?")
+	public void doDataProcessing() {
+		log.info("START DATA EXTRACTING + LOADING");
 		List<Supplier> supplierList = supplierService.getAllSuppliers();
-		supplierService.extractAndInsertData(supplierList);
+		supplierService.extractAndLoadData(supplierList);
+		log.info("END DATA EXTRACTING + LOADING");
 
 		Map<Integer, String> mappingMap = getMappingMap(supplierList);
 		List<String> hotelData = datalakeService.getAllDocuments();
 
-		transformData(hotelData, mappingMap);
+		log.info("START DATA TRANSFORMING");
+		hotelService.transformData(hotelData, mappingMap);
 		datalakeService.clearCollection();
-	}
-
-	public JsonObject convertToJsonObject(String input) {
-		return JsonParser.parseString(input).getAsJsonObject();
-	}
-
-	public void transformData(List<String> supplierDataMap, Map<Integer, String> mappingMap) {
-		supplierDataMap.forEach(supplierData -> {
-			JsonObject supplierObject = convertToJsonObject(supplierData);
-			Integer priorityLevel = supplierObject.get(PRIORITY_LEVEL).getAsInt();
-			JsonObject schemaObject = convertToJsonObject(mappingMap.get(priorityLevel));
-			Hotel hotel = hotelService.convertData(supplierObject, schemaObject);
-
-		});
+		log.info("END DATA TRANSFORMING");
 	}
 
 	public Map<Integer, String> getMappingMap(List<Supplier> supplierList) {

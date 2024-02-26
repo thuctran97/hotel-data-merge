@@ -24,7 +24,7 @@ public class HotelDataController {
 	@GetMapping("/get")
 	public List<Hotel> getHotelDataById(@RequestParam List<String> id) {
 		log.info("GET HOTEL DATA USING ID LIST: {}", id);
-		return hotelService.findById(id);
+		return hotelService.findAllById(id);
 	}
 
 	@GetMapping("/get/destination")

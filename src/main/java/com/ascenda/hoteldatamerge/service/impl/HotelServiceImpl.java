@@ -2,7 +2,10 @@ package com.ascenda.hoteldatamerge.service.impl;
 
 import static com.ascenda.hoteldatamerge.constant.StringConstant.*;
 
+import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -13,6 +16,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,20 +26,65 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class HotelServiceImpl implements HotelService {
 
+    private final Field[] hotelFields = Hotel.class.getDeclaredFields();
+
 	private final HotelRepository hotelRepository;
 
 	@Override
-	public List<Hotel> findById(List<String> ids) {
+	public List<Hotel> findAllById(List<String> ids) {
 		return hotelRepository.findAllById(ids);
 	}
+
+    @Override
+    public Hotel findById(String id) {
+        Optional<Hotel> hotel = hotelRepository.findById(id);
+        if (hotel.isEmpty()){
+            return null;
+        }
+        return hotel.get();
+    }
 
 	@Override
 	public Hotel findByDestinationId(Integer destinationIds) {
 		return hotelRepository.findByLocation_DestinationId(destinationIds);
 	}
 
+    public void insertData(Hotel hotel){
+        Hotel existingHotel = findById(hotel.getId());
+        if (existingHotel == null){
+            hotelRepository.insert(hotel);
+            return;
+        }
+
+        for(Field field : hotelFields){
+            field.setAccessible(true);
+            try {
+                Object valueA = field.get(hotel);
+                if (valueA == null) {
+                    Object valueB = field.get(hotel);
+                    field.set(hotel, valueB);
+                }
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+        hotelRepository.deleteById(existingHotel.getId());
+        hotelRepository.insert(hotel);
+    }
+
+    @Override
+    public void transformData(List<String> supplierDataMap, Map<Integer, String> mappingMap) {
+        supplierDataMap.forEach(supplierData -> {
+            JsonObject supplierObject = convertToJsonObject(supplierData);
+            Integer priorityLevel = supplierObject.get(PRIORITY_LEVEL).getAsInt();
+            JsonObject schemaObject = convertToJsonObject(mappingMap.get(priorityLevel));
+            Hotel hotel = mapData(supplierObject, schemaObject);
+            insertData(hotel);
+        });
+    }
+
 	@Override
-	public Hotel convertData(JsonObject supplierObject, JsonObject mapperObject) {
+	public Hotel mapData(JsonObject supplierObject, JsonObject mapperObject) {
 		JsonObject hotelObject = new JsonObject();
 
 		mapperObject.entrySet().forEach(entry -> {
@@ -137,4 +186,8 @@ public class HotelServiceImpl implements HotelService {
 		}
 		hotelObject.add(IMAGES, imageArray);
 	}
+
+    public JsonObject convertToJsonObject(String input) {
+        return JsonParser.parseString(input).getAsJsonObject();
+    }
 }

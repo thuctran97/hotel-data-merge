@@ -36,7 +36,7 @@ public class SupplierServiceImpl implements SupplierService {
 	}
 
 	@Override
-	public void extractAndInsertData(List<Supplier> supplierList) {
+	public void extractAndLoadData(List<Supplier> supplierList) {
 		supplierList.parallelStream().forEach(supplier -> {
 			ResponseEntity<String> response = restTemplate.getForEntity(supplier.getUrl(), String.class);
 			if (response.getBody() == null) {
