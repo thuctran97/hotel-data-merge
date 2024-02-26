@@ -26,7 +26,7 @@ public class DataProcessingJob {
 
 	private final DatalakeService datalakeService;
 
-	@Scheduled(cron = "*/10 * * * * ?")
+	@Scheduled(cron = "*/30 * * * * ?")
 	public void doDataProcessing() {
 		doDataExtractingAndLoading();
 		doDataTransforming();
