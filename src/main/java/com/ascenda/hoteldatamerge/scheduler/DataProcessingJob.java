@@ -53,7 +53,7 @@ public class DataProcessingJob {
 
 	public Map<Integer, String> getMappingMap(List<Supplier> supplierList) {
 		Map<Integer, String> result = new HashMap<>();
-		supplierList.forEach(supplier -> result.put(supplier.getDataPriorityLevel(), supplier.getMappingSchema()));
+		supplierList.forEach(supplier -> result.put(supplier.getPriorityLevel(), supplier.getReferenceSchema()));
 		return result;
 	}
 

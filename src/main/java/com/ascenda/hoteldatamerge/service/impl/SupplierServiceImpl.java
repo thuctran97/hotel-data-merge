@@ -45,7 +45,7 @@ public class SupplierServiceImpl implements SupplierService {
 			}
 			JsonArray jsonArray = JsonParser.parseString(response.getBody()).getAsJsonArray();
 			jsonArray.asList().stream().map(JsonElement::getAsJsonObject).forEach(jsonObject -> {
-				jsonObject.add(PRIORITY_LEVEL, JsonParser.parseString(supplier.getDataPriorityLevel().toString()));
+				jsonObject.add(PRIORITY_LEVEL, JsonParser.parseString(supplier.getPriorityLevel().toString()));
 				mongoTemplate.save(jsonObject.toString(), DATA_LAKE_COLLECTION);
 			});
 		});

@@ -5,8 +5,8 @@ db.suppliers.insert(
         {
             "name": "acme",
             "url": "https://5f2be0b4ffc88500167b85a0.mockapi.io/suppliers/acme",
-            "dataPriorityLevel": 1,
-            "mappingSchema": {
+            "priorityLevel": 1,
+            "referenceSchema": {
                 "id": "Id",
                 "name": "Name",
                 "location": {
@@ -24,8 +24,8 @@ db.suppliers.insert(
         {
             "name": "patagonia",
             "url": "https://5f2be0b4ffc88500167b85a0.mockapi.io/suppliers/patagonia",
-            "dataPriorityLevel": 2,
-            "mappingSchema": {
+            "priorityLevel": 2,
+            "referenceSchema": {
                 "id": "id",
                 "name": "name",
                 "location": {
@@ -49,8 +49,8 @@ db.suppliers.insert(
         {
             "name": "paperflies",
             "url": "https://5f2be0b4ffc88500167b85a0.mockapi.io/suppliers/paperflies",
-            "dataPriorityLevel": 3,
-            "mappingSchema": {
+            "priorityLevel": 3,
+            "referenceSchema": {
                 "id": "hotel_id",
                 "name": "hotel_name",
                 "location":{

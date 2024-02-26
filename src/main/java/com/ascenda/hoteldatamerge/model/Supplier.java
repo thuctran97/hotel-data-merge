@@ -22,7 +22,7 @@ public class Supplier {
 
 	private String url;
 
-	private Integer dataPriorityLevel;
+	private Integer priorityLevel;
 
-	private String mappingSchema;
+	private String referenceSchema;
 }
